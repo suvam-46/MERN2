@@ -5,7 +5,7 @@ const sendEmail = require("../../services/sendEmail");
  
  
  exports.userRegister = async (req, res) => {
-    //Alternative (object destructuring)
+    //Alternative
     const { username, email, phoneNumber, password } = req.body
     
     if(!username || !email || !phoneNumber || !password){
