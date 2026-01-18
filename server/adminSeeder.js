@@ -1,5 +1,5 @@
-const User = require("./Model/userModel");
 const bcrypt = require("bcryptjs");
+const User = require("./Model/userModel");
 const adminSeeder = async () =>{
     const isAdminExists = await User.findOne({ userEmail: "admin@gmail.com"});
     if (!isAdminExists){

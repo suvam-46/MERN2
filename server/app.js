@@ -2,7 +2,7 @@ require("dotenv").config();
 const { connectDatabase } = require("./database/connectDB");
 const express = require("express");
 const User = require("./Model/userModel");
-const Product = require("./model/productModel");
+const Product = require("./Model/productModel");
 const app = express();
 const cors = require("cors");
 const bcrypt = require("bcryptjs");

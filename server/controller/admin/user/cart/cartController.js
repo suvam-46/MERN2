@@ -1,4 +1,4 @@
-const Product = require("../../../../model/productModel");
+const Product = require("../../../../Model/productModel");
 const User = require("../../../../Model/userModel");
 
 exports.addTocart = async (req, res) => {

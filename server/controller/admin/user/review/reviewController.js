@@ -1,31 +1,31 @@
-const Product = require("../../../../model/productModel");
-const Review = require("../../../../model/reviewModel");
+const Product = require("../../../../Model/productModel");
+const Review = require("../../../../Model/reviewModel");
 
 exports.createReview = async (req, res) => {
-    const userId = req.user.id;
-    const{rating, message} = req.body;
-    const productId = req.params.id;
-    if(!rating || !message || !productId) {
-        return res.status(400).json({
-            message: "Please Provide rating,message,productId",
-        });
-    }
-    const productExist = await Product.findById(productId);
-    if(!productExist){
-        return res.status(404).json({
-            message: "Product with that productId doesnot exist",
+  const userId = req.user.id;
+  const { rating, message } = req.body;
+  const productId = req.params.id;
+  if (!rating || !message || !productId) {
+    return res.status(400).json({
+      message: "Please Provide rating,message,productId",
     });
-    }
-await Review.create({
+  }
+  const productExist = await Product.findById(productId);
+  if (!productExist) {
+    return res.status(404).json({
+      message: "Product with that productId doesnot exist",
+    });
+  }
+  await Review.create({
     userId,
     productId,
     rating,
     message,
-});
-res.status(200).json({
-    message: "Reviewed Successfully"
-});
-}
+  });
+  res.status(200).json({
+    message: "Reviewed Successfully",
+  });
+};
 exports.getProductReview = async (req, res) => {
   const productId = req.params.id;
   if (!productId) {
@@ -41,8 +41,8 @@ exports.getProductReview = async (req, res) => {
   }
 
   const reviews = await Review.find({ productId })
-  .populate("userId")
-  .populate("productId");
+    .populate("userId")
+    .populate("productId");
   res.status(200).json({
     message: "review fetched successfully",
     data: reviews,

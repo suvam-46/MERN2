@@ -1,5 +1,5 @@
-const Product = require("../../../model/productModel");
-const Review = require("../../../model/reviewModel");
+const Product = require("../../../Model/productModel");
+const Review = require("../../../Model/reviewModel");
 const catchAsync = require("../../../services/catchAsync");
 const fs = require("fs");
 
@@ -199,7 +199,7 @@ exports.editProduct = async (req, res) => {
     {
       new: true,
       runValidators: true,
-    }
+    },
   );
   res.status(200).json({
     message: "Product creted successfuly",
