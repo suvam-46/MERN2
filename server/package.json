@@ -1,0 +1,31 @@
+{
+  "name": "server",
+  "version": "1.0.0",
+  "description": "This is My Final Year Project(Ecommerce Site\"FootWear\")",
+  "homepage": "https://github.com/suvam-46/Final-Year-Project-FootWear-#readme",
+  "bugs": {
+    "url": "https://github.com/suvam-46/Final-Year-Project-FootWear-/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/suvam-46/Final-Year-Project-FootWear-.git"
+  },
+  "license": "ISC",
+  "author": "Suvam Khanal",
+  "type": "commonjs",
+  "main": "index.js",
+  "scripts": {
+    "dev": "nodemon app.js"
+  },
+  "dependencies": {
+    "bcryptjs": "^3.0.3",
+    "body-parser": "^2.2.2",
+    "cors": "^2.8.5",
+    "dotenv": "^17.2.3",
+    "express": "^5.2.1",
+    "jsonwebtoken": "^9.0.3",
+    "mongoose": "^9.1.3",
+    "nodemailer": "^7.0.12",
+    "nodemon": "^3.1.11"
+  }
+}
