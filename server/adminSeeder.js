@@ -10,7 +10,7 @@ const adminSeeder = async () =>{
             userName: "admin",
             role: "admin",
         });
-        console.log("Admin seeded successfully!!!");
+        console.log("Admin seeded successfully!!");
     } else {
         console.log("Admin already seeded");
     }
