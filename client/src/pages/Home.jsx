@@ -1,39 +1,40 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { motion } from "framer-motion";
 import { Link } from "react-router-dom";
+import axios from "axios";
 // import { useCart } from "../context/cartContext";
 
 // You can later move this to a separate data file or fetch from API
-const featuredProducts = [
-  {
-    id: 1,
-    name: "Moonlight Pearl Necklace",
-    price: 189,
-    image: "https://images.unsplash.com/photo-1611590027211-b954fd027b51",
-    category: "Necklace",
-  },
-  {
-    id: 2,
-    name: "Sapphire Drop Earrings",
-    price: 245,
-    image: "https://images.unsplash.com/photo-1599643478518-a784e5f92112",
-    category: "Earrings",
-  },
-  {
-    id: 3,
-    name: "Vintage Rose Gold Ring",
-    price: 320,
-    image: "https://images.unsplash.com/photo-1605100804763-247f67b3557e",
-    category: "Ring",
-  },
-  {
-    id: 4,
-    name: "Emerald & Diamond Bracelet",
-    price: 480,
-    image: "https://images.unsplash.com/photo-1611590028471-f8dd1a7d6c3d",
-    category: "Bracelet",
-  },
-];
+// const featuredProducts = [
+//   {
+//     id: 1,
+//     name: "Moonlight Pearl Necklace",
+//     price: 189,
+//     image: "https://images.unsplash.com/photo-1611590027211-b954fd027b51",
+//     category: "Necklace",
+//   },
+//   {
+//     id: 2,
+//     name: "Sapphire Drop Earrings",
+//     price: 245,
+//     image: "https://images.unsplash.com/photo-1599643478518-a784e5f92112",
+//     category: "Earrings",
+//   },
+//   {
+//     id: 3,
+//     name: "Vintage Rose Gold Ring",
+//     price: 320,
+//     image: "https://images.unsplash.com/photo-1605100804763-247f67b3557e",
+//     category: "Ring",
+//   },
+//   {
+//     id: 4,
+//     name: "Emerald & Diamond Bracelet",
+//     price: 480,
+//     image: "https://images.unsplash.com/photo-1611590028471-f8dd1a7d6c3d",
+//     category: "Bracelet",
+//   },
+// ];
 
 const categories = [
   {
@@ -55,8 +56,18 @@ const categories = [
 ];
 
 export default function Home() {
- // const { addToCart } = useCart();
 
+  const [product, setProduct] = useState([])
+  const fetchProduct = async () => {
+    const response = await axios.get("http://localhost:5000/product");
+    console.log("Product Arrays:", response)
+    setProduct(response.data.data)
+  };
+  useEffect(() => {
+    fetchProduct();
+  }, [])
+
+  // const { addToCart } = useCart();
   return (
     <div className="w-full">
       {/* Hero Section */}
@@ -116,7 +127,7 @@ export default function Home() {
           </div>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 sm:gap-8 md:gap-10">
-            {featuredProducts.map((product) => (
+            {product.map((product) => (
               <motion.div
                 key={product.id}
                 initial={{ opacity: 0, y: 30 }}
@@ -125,32 +136,41 @@ export default function Home() {
                 transition={{ duration: 0.6 }}
                 className="group"
               >
-                <div className="relative overflow-hidden rounded-2xl shadow-lg mb-4 aspect-square">
-                  <img
-                    src={product.image}
-                    alt={product.name}
-                    className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
-                  />
-                  <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center">
-                    <button
-                      onClick={() => addToCart(product)}
-                      className="bg-white text-gray-900 px-6 py-2 sm:px-8 sm:py-3 rounded-full font-medium text-sm sm:text-base transform -translate-y-6 group-hover:translate-y-0 opacity-0 group-hover:opacity-100 transition-all duration-300 hover:bg-amber-50"
-                    >
-                      Quick Add
-                    </button>
+                <Link to={`/product/${product.id}`}>
+                  <div className="relative overflow-hidden rounded-2xl shadow-lg mb-4 aspect-square">
+                    <img
+                      src={product.productImage}
+                      alt={product.productName}
+                      className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
+                    />
+
+                    {/* Overlay */}
+                    <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center">
+                      <button
+                        onClick={(e) => {
+                          e.preventDefault(); // stop navigation
+                          addToCart(product);
+                        }}
+                        className="bg-white text-gray-900 px-6 py-2 sm:px-8 sm:py-3 rounded-full font-medium text-sm sm:text-base transform -translate-y-6 group-hover:translate-y-0 opacity-0 group-hover:opacity-100 transition-all duration-300 hover:bg-amber-50"
+                      >
+                        Quick Add
+                      </button>
+                    </div>
                   </div>
-                </div>
+                </Link>
+
                 <div className="text-center">
                   <h3 className="font-playfair text-lg sm:text-xl mb-1">
-                    {product.name}
+                    {product.productName}
                   </h3>
                   <p className="text-amber-600 font-medium text-base sm:text-lg">
-                    ${product.price}
+                    NPR.{product.productPrice}
                   </p>
                 </div>
               </motion.div>
             ))}
           </div>
+
 
           <div className="text-center mt-12 sm:mt-16">
             <Link

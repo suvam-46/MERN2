@@ -1,5 +1,5 @@
 // src/App.jsx
-import {Routes, Route } from "react-router-dom";
+import { Routes, Route } from "react-router-dom";
 import Home from "./pages/Home";
 import Login from "./pages/auth/Login";
 import Shop from "./pages/Shop";
@@ -10,10 +10,9 @@ import OtpVerify from "./pages/auth/OtpVerify";
 import Navbar from "./components/Navbar";
 import Footer from "./components/Footer";
 import ScrollToTop from "./components/ScrollToTop";
-
-
-// import Cart from "./pages/Cart";
-// import ProductPage from "./pages/ProductPage";
+import Cart from "./pages/Cart";
+import ProductDetail from "./pages/ProductDetail";
+import Checkout from "./pages/ProceedToPay";
 
 function App() {
   return (
@@ -28,14 +27,14 @@ function App() {
           <Route path="/" element={<Home />} />
           {/* Add more routes as you create pages */}
           <Route path="/shop" element={<Shop />} />
-          {/* <Route path="/cart" element={<Cart />} /> */}
-          {/* <Route path="/product" element={<ProductDetail />} /> */}
+          <Route path="/cart" element={<Cart />} />
+          <Route path="/product/:id" element={<ProductDetail />} />
           <Route path="/login" element={<Login />} />
           <Route path="/register" element={<Register />} />
           <Route path="/forget-password" element={<ForgotPassword />} />
           <Route path="/reset-password" element={<ResetPassword />} />
           <Route path="/otp-verify" element={<OtpVerify />} />
-          {/* <Route path="/checkout" element={<Checkout />} /> */}
+          <Route path="/checkout" element={<Checkout />} />
         </Routes>
       </main>
 

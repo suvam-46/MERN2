@@ -22,6 +22,7 @@ exports.createProduct = async (req, res) => {
       productPrice,
       productStatus,
       productStockQty,
+      mainType,
     } = req.body;
 
     // Validation
@@ -30,7 +31,8 @@ exports.createProduct = async (req, res) => {
       !productDescription ||
       !productPrice ||
       !productStatus ||
-      !productStockQty
+      !productStockQty ||
+      !mainType
     ) {
       return res.status(400).json({
         message: "Please provide all the fields",
@@ -44,6 +46,7 @@ exports.createProduct = async (req, res) => {
       productPrice,
       productStatus,
       productStockQty,
+      mainType,
       productImage: file ? `${process.env.BACKEND_URL}/${filePath}` : filePath,
     });
 
@@ -60,15 +63,15 @@ exports.createProduct = async (req, res) => {
 
 exports.getProducts = catchAsync(async (req, res) => {
   const products = await Product.find();
-  if (products.length === 0) {
+  if (products.lenght === 0) {
     res.status(400).json({
       message: "No product Found",
-      products: [],
+      data: [],
     });
   } else {
     res.status(200).json({
       message: "Product fetched successfully",
-      products,
+      data: products,
     });
   }
 });
@@ -80,23 +83,27 @@ exports.getProduct = async (req, res) => {
       message: "Please provide product id",
     });
   }
-  const product = await Product.find({ _id: id });
-  const getProductReview = await Review.find({productId : id})
-  .populate("userId")
-  .populate("productId");
+  const productId = await Product.find({ _id: id });
+  const productReviews = await Review.find({ productId: id })
+    .populate("userId")
+    .populate("productId");
+
   if (product.length == 0) {
     res.status(400).json({
       message: "No product found with that id",
-      product: [],
+      data: {
+        data: [],
+        data2: [],
+      },
     });
   } else {
     res.status(200).json({
       message: "Product Fetched Successfully",
-      data: product,
-      data2: getProductReview,
+      data: { product, productReviews },
     });
   }
 };
+
 exports.deleteProduct = async (req, res) => {
   const { id } = req.params;
   if (!id) {
@@ -137,6 +144,7 @@ exports.editProduct = async (req, res) => {
     productPrice,
     productStatus,
     productStockQty,
+    mainType,
   } = req.body;
 
   // Validation
@@ -146,6 +154,7 @@ exports.editProduct = async (req, res) => {
     !productPrice ||
     !productStatus ||
     !productStockQty ||
+    !mainType ||
     !id
   ) {
     return res.status(400).json({
@@ -181,6 +190,7 @@ exports.editProduct = async (req, res) => {
       productPrice,
       productStatus,
       productStockQty,
+      mainType,
       productImage:
         req.file && req.file.filename
           ? `${process.env.BACKEND_URL}/${req.file.filename}`
@@ -192,7 +202,7 @@ exports.editProduct = async (req, res) => {
     }
   );
   res.status(200).json({
-    message: "Product edited successfuly",
-    datas,
+    message: "Product creted successfuly",
+    data: datas,
   });
 };
