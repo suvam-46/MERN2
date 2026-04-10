@@ -11,6 +11,7 @@
   },
   "dependencies": {
     "@tailwindcss/vite": "^4.1.18",
+<<<<<<< HEAD
     "axios": "^1.14.0",
     "cors": "^2.8.5",
     "framer-motion": "^12.25.0",
@@ -18,6 +19,14 @@
     "react": "^19.2.0",
     "react-dom": "^19.2.0",
     "react-hot-toast": "^2.6.0",
+=======
+    "axios": "^1.13.2",
+    "cors": "^2.8.5",
+    "framer-motion": "^12.24.12",
+    "lucide-react": "^0.562.0",
+    "react": "^19.2.0",
+    "react-dom": "^19.2.0",
+>>>>>>> f0508147ab85022abb8c8d1d3e42f06a4a0a0e30
     "react-router-dom": "^7.12.0",
     "tailwindcss": "^4.1.18"
   },

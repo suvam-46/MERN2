@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 // routes/authRoutes.js
 const express = require("express");
 const router = express.Router();
@@ -50,3 +51,18 @@ router.post("/verify-reset-otp", verifyResetPasswordOtp);
 router.post("/reset-password", resetPassword);
 
 module.exports = router;
+=======
+const express = require("express");
+const { userRegister, userLogin, forgotPassword, verifyOtp, resetPassword } = require("../controller/auth/authController");
+const router = express.Router();
+router.route("/register").post(userRegister)
+router.route("/login").post(userLogin)
+router.route("/forgotPassword").post(forgotPassword)
+router.route("/verifyotp").post(verifyOtp)
+router.route("/newPassword").post(resetPassword)
+module.exports = router;
+
+
+
+
+>>>>>>> f0508147ab85022abb8c8d1d3e42f06a4a0a0e30
