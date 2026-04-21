@@ -158,13 +158,19 @@ exports.userLogin = async (req, res) => {
       return res.status(400).json({ message: "Please provide email and password" });
     }
 
-    // 2. Find User (Using userEmail to match your schema)
+    // 2. Find User
     const userFound = await User.findOne({ userEmail: email });
     if (!userFound) {
       return res.status(404).json({ message: "User with that email not found" });
     }
 
-    // 3. Email Verification Check
+    // 3. Password Validation (Check this BEFORE verification status for security)
+    const isMatched = bcrypt.compareSync(password, userFound.userPassword);
+    if (!isMatched) {
+      return res.status(401).json({ message: "Invalid Password" });
+    }
+
+    // 4. Email Verification Check (OTP stage)
     if (!userFound.isEmailVerified) {
       return res.status(403).json({
         message: "Your email is not verified. Please verify your email first.",
@@ -173,40 +179,47 @@ exports.userLogin = async (req, res) => {
       });
     }
 
-    // 4. Password Validation
-    const isMatched = bcrypt.compareSync(password, userFound.userPassword);
-
-    if (isMatched) {
-      // 5. Generate JWT Token
-      const token = jwt.sign(
-        { id: userFound._id, role: userFound.role },
-        process.env.SECRET_KEY,
-        { expiresIn: "30d" }
-      );
-
-      // 6. Set Secure Cookie
-      res.cookie("token", token, {
-        httpOnly: true,
-        // Secure is true only in production (requires HTTPS)
-        secure: process.env.NODE_ENV === "production", 
-        sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
-        maxAge: 30 * 24 * 60 * 60 * 1000, // 30 days
+    // 5. NEW: Vendor Approval Check (Admin Verification stage)
+    // Only applies if the user is a vendor
+    if (userFound.role === "vendor" && !userFound.isVerifiedVendor) {
+      return res.status(403).json({
+        success: false,
+        message: "Your vendor account is pending admin approval. Access restricted."
       });
-
-      // 7. Success Response
-      res.status(200).json({
-        message: "User logged in successfully",
-        user: {
-          id: userFound._id,
-          userName: userFound.userName,
-          role: userFound.role,
-          userEmail: userFound.userEmail,
-          isEmailVerified: userFound.isEmailVerified
-        }
-      });
-    } else {
-      res.status(401).json({ message: "Invalid Password" });
     }
+
+    // 6. Generate JWT Token
+    const token = jwt.sign(
+      { id: userFound._id, role: userFound.role },
+      process.env.SECRET_KEY,
+      { expiresIn: "30d" }
+    );
+
+    // 7. Set Secure Cookie
+    res.cookie("token", token, {
+      // httpOnly prevents XSS attacks
+      httpOnly: true,
+      // secure ensures token is sent over HTTPS only in production
+      secure: process.env.NODE_ENV === "production", 
+      sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
+      maxAge: 30 * 24 * 60 * 60 * 1000, 
+    });
+
+    // 8. Success Response
+    res.status(200).json({
+      success: true,
+      message: "Logged in successfully",
+      user: {
+        id: userFound._id,
+        userName: userFound.userName,
+        role: userFound.role,
+        userEmail: userFound.userEmail,
+        isEmailVerified: userFound.isEmailVerified,
+        isVerifiedVendor: userFound.isVerifiedVendor // useful for frontend UI logic
+      },
+      token // Sending token in JSON too, helpful for some frontend state managers
+    });
+
   } catch (error) {
     console.error("Login Error:", error);
     res.status(500).json({ message: "Internal Server Error" });
@@ -349,3 +362,4 @@ exports.resendOTP = async (req, res) => {
     res.status(500).json({ message: "Internal server error" });
   }
 };
+

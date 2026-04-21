@@ -9,7 +9,7 @@ const userSchema = new Schema(
     userPhoneNumber: { type: String, required: true },
     role: { 
         type: String, 
-        enum: ["customer", "vendor"], 
+        enum: ["customer", "vendor", "admin"], 
         default: "customer" 
     },
     

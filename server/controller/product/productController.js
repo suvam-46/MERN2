@@ -146,3 +146,36 @@ exports.deleteProduct = async (req, res) => {
         res.status(500).json({ message: "Error deleting product" });
     }
 };
+exports.getAllProducts = async (req, res) => {
+    try {
+        const products = await Product.find();
+        res.status(200).json({
+            success: true,
+            products
+        });
+    } catch (error) {
+        res.status(500).json({ message: "Failed to fetch shop products", error: error.message });
+    }
+};
+
+// controllers/productController.js
+// controllers/productController.js
+
+exports.getSingleProduct = async (req, res) => {
+    const product = await Product.findById(req.params.id)
+        .populate({
+            path: "vendor",
+            // Use the exact field names from your User model here
+            select: "userName storeName storeImage isVerifiedVendor", 
+        })
+        .populate({
+            path: "reviews.user",
+            select: "userName avatar", // Customers use avatar, vendors use storeImage
+        });
+
+    if (!product) {
+        return res.status(404).json({ success: false, message: "Product not found" });
+    }
+
+    res.status(200).json({ success: true, product });
+};

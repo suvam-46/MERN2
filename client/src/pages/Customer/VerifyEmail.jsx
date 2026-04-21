@@ -1,20 +1,20 @@
-import React, { useState, useEffect } from 'react'; // Added useEffect for timer
+import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { useNavigate, useLocation, Link } from 'react-router-dom';
+import toast, { Toaster } from 'react-hot-toast'; // 1. Added Toast Import
 import { ShieldCheck, ArrowRight, RefreshCw } from "lucide-react";
 
 const VerifyEmail = () => {
   const [otp, setOtp] = useState('');
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
-  const [resending, setResending] = useState(false); // New state for resending
-  const [timer, setTimer] = useState(0); // Optional: countdown timer
+  const [resending, setResending] = useState(false);
+  const [timer, setTimer] = useState(0); 
   
   const navigate = useNavigate();
   const location = useLocation();
   const email = location.state?.email || "";
 
-  // Optional: Timer logic to prevent spamming
   useEffect(() => {
     let interval;
     if (timer > 0) {
@@ -25,6 +25,7 @@ const VerifyEmail = () => {
 
   const handleVerify = async (e) => {
     e.preventDefault();
+    const verifyToast = toast.loading("Verifying your code...");
     setLoading(true);
     setError('');
 
@@ -35,31 +36,34 @@ const VerifyEmail = () => {
       });
 
       if (response.status === 200) {
-        alert("Email verified successfully! Please login.");
+        toast.success("Email verified successfully! Please login.", { id: verifyToast });
         navigate("/login");
       }
     } catch (err) {
-      setError(err.response?.data?.message || "Invalid OTP. Please try again.");
+      const errMsg = err.response?.data?.message || "Invalid OTP. Please try again.";
+      setError(errMsg);
+      toast.error(errMsg, { id: verifyToast });
     } finally {
       setLoading(false);
     }
   };
 
-  // --- NEW RESEND LOGIC ---
   const handleResendOTP = async () => {
     if (resending || timer > 0) return;
     
+    const resendToast = toast.loading("Sending new code...");
     setResending(true);
     setError('');
 
     try {
-      // Replace this URL with your actual backend resend endpoint
       await axios.post("http://localhost:3000/api/auth/resendOTP", { email });
       
-      alert("A new OTP has been sent to your email.");
-      setTimer(60); // Set a 60-second cooldown
+      toast.success("A new OTP has been sent to your email.", { id: resendToast });
+      setTimer(60); // 60-second cooldown
     } catch (err) {
-      setError(err.response?.data?.message || "Failed to resend OTP.");
+      const errMsg = err.response?.data?.message || "Failed to resend OTP.";
+      setError(errMsg);
+      toast.error(errMsg, { id: resendToast });
     } finally {
       setResending(false);
     }
@@ -67,6 +71,9 @@ const VerifyEmail = () => {
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-slate-50 py-12 px-4 sm:px-6 lg:px-8">
+      {/* 2. Toaster Component */}
+      <Toaster position="top-center" reverseOrder={false} />
+
       <div className="max-w-md w-full space-y-8 bg-white p-10 rounded-3xl shadow-xl border border-gray-100 text-center">
         
         <div className="flex flex-col items-center">
@@ -100,7 +107,7 @@ const VerifyEmail = () => {
           </div>
 
           {error && (
-            <div className="bg-red-50 border-l-4 border-red-400 p-3 rounded-md">
+            <div className="bg-red-50 border-l-4 border-red-400 p-3 rounded-md animate-in fade-in zoom-in-95">
               <p className="text-xs text-red-700 font-medium">{error}</p>
             </div>
           )}

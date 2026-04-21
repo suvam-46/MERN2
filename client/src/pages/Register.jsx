@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import axios from "axios";
+import toast from "react-hot-toast"; 
 import { 
   Eye, EyeOff, UserPlus, AlertCircle, Loader2, Sparkles, 
   UserCircle, Store, ArrowRight, Image as ImageIcon, MapPin, Phone
@@ -21,7 +22,6 @@ export default function Register() {
   const [storeImage, setStoreImage] = useState(null);
 
   // UI State
-  const [message, setMessage] = useState("");
   const [loading, setLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
@@ -30,13 +30,13 @@ export default function Register() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setMessage("");
 
     if (password !== confirmPassword) {
-      setMessage("Passwords do not match");
+      toast.error("Passwords do not match");
       return;
     }
 
+    const loadingToast = toast.loading("Creating your account...");
     setLoading(true);
 
     const formData = new FormData();
@@ -56,9 +56,12 @@ export default function Register() {
       await axios.post("http://localhost:3000/api/auth/register", formData, {
         headers: { "Content-Type": "multipart/form-data" },
       });
+      
+      toast.success("Registration successful! Check your email.", { id: loadingToast });
       navigate("/verify-email", { state: { email: email } });
     } catch (error) {
-      setMessage(error.response?.data?.message || "Registration failed. Try again.");
+      const errMsg = error.response?.data?.message || "Registration failed. Try again.";
+      toast.error(errMsg, { id: loadingToast });
     } finally {
       setLoading(false);
     }
@@ -66,7 +69,6 @@ export default function Register() {
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-slate-100 px-4 py-8 relative overflow-hidden">
-      
       {/* Background Decor */}
       <div className="absolute top-0 left-0 w-full h-full bg-grid-slate-200/[0.5] [mask-image:linear-gradient(0deg,#fff,rgba(255,255,255,0.6))]"></div>
       <div className="absolute -bottom-40 -right-40 w-80 h-80 bg-purple-100 rounded-full blur-[120px] opacity-70"></div>
@@ -82,7 +84,7 @@ export default function Register() {
             <p className="text-xs font-black text-indigo-300 tracking-[0.3em] uppercase mb-4">Account Creation</p>
           </div>
 
-          <div className="relative z-10 text-center animate-float py-8">
+          <div className="relative z-10 text-center py-8">
             <div className="inline-flex relative mb-6 group">
               <div className="absolute -inset-6 bg-indigo-500 rounded-full blur-3xl opacity-20 transition-opacity duration-1000"></div>
               <div className="relative p-5 bg-white rounded-[2rem] shadow-2xl border border-white/10">
@@ -142,18 +144,7 @@ export default function Register() {
             </button>
           </div>
 
-          {message && (
-            <div className="mb-6 flex items-center gap-3 p-4 bg-red-50 border border-red-100 rounded-2xl text-red-700 animate-in zoom-in-95">
-              <AlertCircle size={20} className="shrink-0" />
-              <p className="text-sm font-bold">{message}</p>
-            </div>
-          )}
-
           <form onSubmit={handleSubmit} className="space-y-6" autoComplete="off">
-            {/* Honeypot fields to prevent password managers from targeting the visible fields */}
-            <input type="text" name="prevent_autofill" style={{ display: 'none' }} tabIndex="-1" />
-            <input type="password" name="password_fake" style={{ display: 'none' }} tabIndex="-1" />
-
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               {/* Name */}
               <div className="group space-y-2">
@@ -163,7 +154,6 @@ export default function Register() {
                   onChange={(e) => setUserName(e.target.value)}
                   autoComplete="off"
                   className="w-full px-5 py-3.5 bg-slate-50 border border-slate-200 rounded-2xl focus:ring-4 focus:ring-indigo-500/10 focus:border-indigo-500 focus:bg-white outline-none transition-all font-semibold"
-                  placeholder=""
                 />
               </div>
 
@@ -175,7 +165,6 @@ export default function Register() {
                   onChange={(e) => setEmail(e.target.value)}
                   autoComplete="new-password" 
                   className="w-full px-5 py-3.5 bg-slate-50 border border-slate-200 rounded-2xl focus:ring-4 focus:ring-indigo-500/10 focus:border-indigo-500 focus:bg-white outline-none transition-all font-semibold"
-                  placeholder=""
                 />
               </div>
             </div>
@@ -190,7 +179,6 @@ export default function Register() {
                 onChange={(e) => setPhoneNumber(e.target.value)}
                 autoComplete="off"
                 className="w-full px-5 py-3.5 bg-slate-50 border border-slate-200 rounded-2xl focus:ring-4 focus:ring-indigo-500/10 focus:border-indigo-500 focus:bg-white outline-none transition-all font-semibold"
-                placeholder=""
               />
             </div>
 
@@ -263,13 +251,13 @@ export default function Register() {
 
             <button
               type="submit" disabled={loading}
-              className="w-full group animate-shine relative flex justify-center items-center py-5 px-8 text-xs font-black tracking-[0.2em] rounded-2xl text-white bg-slate-950 hover:bg-indigo-600 shadow-2xl shadow-indigo-100 active:scale-[0.98] transition-all duration-500 disabled:bg-slate-300 overflow-hidden"
+              className="w-full group relative flex justify-center items-center py-5 px-8 text-xs font-black tracking-[0.2em] rounded-2xl text-white bg-slate-950 hover:bg-indigo-600 shadow-2xl active:scale-[0.98] transition-all duration-500 disabled:bg-slate-300 overflow-hidden italic uppercase"
             >
               {loading ? (
                 <Loader2 className="animate-spin" size={20} />
               ) : (
                 <div className="flex items-center gap-2">
-                  <span>CREATE {role.toUpperCase()} ACCOUNT</span>
+                  <span>Create {role} Account</span>
                   <ArrowRight size={18} className="group-hover:translate-x-1.5 transition-transform duration-300" />
                 </div>
               )}
@@ -282,6 +270,10 @@ export default function Register() {
               <Link to="/login" className="ml-2 font-black text-indigo-600 hover:text-indigo-800 uppercase tracking-tighter transition-colors">Sign In</Link>
             </p>
           </div>
+          
+          <p className="text-center text-slate-400 text-[9px] mt-10 font-black tracking-[0.4em] uppercase opacity-60">
+            &copy; 2026 FootWear Global &bull; Secure Entry Port
+          </p>
         </div>
       </div>
     </div>
